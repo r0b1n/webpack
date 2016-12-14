@@ -326,26 +326,30 @@ describe("Compiler (caching)", function() {
 
 			fs.writeFileSync(tempFixture.aFilepath, aContent);
 
-			helper.runAgain({
-				expectErrors: 1
-			}, function(stats, files, iteration) {
+			setTimeout(function() {
+				helper.runAgain({
+					expectErrors: 1
+				}, function(stats, files, iteration) {
 
-				var aContent = fs.readFileSync(tempFixture.aFilepath).toString().replace('\"))))This is a', 'This is a again');
+					var aContent = fs.readFileSync(tempFixture.aFilepath).toString().replace('\"))))This is a', 'This is a again');
 
-				fs.writeFileSync(tempFixture.aFilepath, aContent);
+					fs.writeFileSync(tempFixture.aFilepath, aContent);
 
-				helper.runAgain(function(stats, files, iteration) {
+					setTimeout(function() {
+						helper.runAgain(function(stats, files, iteration) {
 
-					// And only a.js built after it was modified
-					stats.modules[0].name.should.containEql('a.js');
-					stats.modules[0].built.should.be.exactly(true, 'a.js should have been built');
+							// And only a.js built after it was modified
+							stats.modules[0].name.should.containEql('a.js');
+							stats.modules[0].built.should.be.exactly(true, 'a.js should have been built');
 
-					stats.modules[1].name.should.containEql('c.js');
-					//stats.modules[1].built.should.be.exactly(false, 'c.js should not have built');
+							stats.modules[1].name.should.containEql('c.js');
+							//stats.modules[1].built.should.be.exactly(false, 'c.js should not have built');
 
-					done();
+							done();
+						});
+					}, 300);
 				});
-			});
+			}, 300);
 		});
 	});
 
